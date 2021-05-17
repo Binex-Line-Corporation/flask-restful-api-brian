@@ -41,10 +41,10 @@ def api_filter():
         query += ' id=? AND'
         to_filter.append(id)
     if published:
-        query += 'published=? AND'
+        query += ' published=? AND'
         to_filter.append(published)
     if author:
-        query += 'author=? AND'
+        query += ' author=? AND'
         to_filter.append(author)
     if not (id or published or author):
         return page_not_found(404)
