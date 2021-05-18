@@ -1,9 +1,8 @@
-import flask
-from flask import request, jsonify
+from application import app
+from application import errors
+from flask import render_template, request, jsonify
 import sqlite3
 
-app=flask.Flask(__name__)
-app.config["DEBUG"] = True
 
 def dictionary1(cursor, row):
     d = {}
@@ -11,21 +10,23 @@ def dictionary1(cursor, row):
         d[col[0]] = row[idx]
     return d
 
-@app.route('/', methods=['GET'])
-def home():
-    return "<h1>Jacob and Brian's API World</h1><p>This is a testbed for API Learning</p>"
 
-@app.errorhandler(404)
-def page_not_found(e):
-    return "<h1>404</h1><p>The resource could not be found.</p>"
-
-@app.route('/api/v1/resources/books/all', methods=['GET'])
-def api_all():
+def db_cursor():
     conn = sqlite3.connect('books.db')
     conn.row_factory = dictionary1
-    cur = conn.cursor()
-    all_books = cur.execute('SELECT * FROM books;').fetchall()
+    return conn.cursor()
+
+
+@app.route('/', methods=['GET'])
+def home():
+    return render_template('index.html')
+
+    
+@app.route('/api/v1/resources/books/all', methods=['GET'])
+def api_all():
+    all_books = db_cursor().execute('SELECT * FROM books;').fetchall()
     return jsonify(all_books)
+
 
 @app.route('/api/v1/resources/books/', methods=['GET'])
 def api_filter():
@@ -47,16 +48,10 @@ def api_filter():
         query += ' author=? AND'
         to_filter.append(author)
     if not (id or published or author):
-        return page_not_found(404)
+        return errors.page_not_found(404)
 
     query = query[:-4] + ';'
 
-    conn = sqlite3.connect('books.db')
-    conn.row_factory = dictionary1
-    cur = conn.cursor()
-
-    results = cur.execute(query, to_filter).fetchall()
+    results = db_cursor().execute(query, to_filter).fetchall()
 
     return jsonify(results)
-
-app.run()

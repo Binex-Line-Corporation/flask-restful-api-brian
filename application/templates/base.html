@@ -1,0 +1,12 @@
+<html>
+    <head>
+        {% if title %}
+        <title>{{ title }} - Brian's Flask REST API</title>
+        {% else %}
+        <title>Brian's Flask REST API</title>
+        {% endif %}
+    </head>
+    <body>
+        {% block content %}{% endblock %}
+    </body>
+</html>
