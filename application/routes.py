@@ -1,4 +1,5 @@
 from application import app
+from application import errors
 from flask import render_template, request, jsonify
 import sqlite3
 
@@ -44,7 +45,7 @@ def api_filter():
         query += ' author=? AND'
         to_filter.append(author)
     if not (id or published or author):
-        return page_not_found(404)
+        return errors.page_not_found(404)
 
     query = query[:-4] + ';'
 
