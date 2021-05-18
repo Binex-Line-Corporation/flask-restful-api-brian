@@ -1,5 +1,5 @@
 from application import app
-from flask import request, jsonify
+from flask import render_template, request, jsonify
 import sqlite3
 
 
@@ -12,7 +12,7 @@ def dictionary1(cursor, row):
 
 @app.route('/', methods=['GET'])
 def home():
-    return "<h1>Jacob and Brian's API World</h1><p>This is a testbed for API Learning</p>"
+    return render_template('index.html')
 
     
 @app.route('/api/v1/resources/books/all', methods=['GET'])
