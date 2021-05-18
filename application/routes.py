@@ -11,6 +11,12 @@ def dictionary1(cursor, row):
     return d
 
 
+def db_cursor():
+    conn = sqlite3.connect('books.db')
+    conn.row_factory = dictionary1
+    return conn.cursor()
+
+
 @app.route('/', methods=['GET'])
 def home():
     return render_template('index.html')
@@ -18,10 +24,7 @@ def home():
     
 @app.route('/api/v1/resources/books/all', methods=['GET'])
 def api_all():
-    conn = sqlite3.connect('books.db')
-    conn.row_factory = dictionary1
-    cur = conn.cursor()
-    all_books = cur.execute('SELECT * FROM books;').fetchall()
+    all_books = db_cursor().execute('SELECT * FROM books;').fetchall()
     return jsonify(all_books)
 
 
@@ -49,10 +52,6 @@ def api_filter():
 
     query = query[:-4] + ';'
 
-    conn = sqlite3.connect('books.db')
-    conn.row_factory = dictionary1
-    cur = conn.cursor()
-
-    results = cur.execute(query, to_filter).fetchall()
+    results = db_cursor().execute(query, to_filter).fetchall()
 
     return jsonify(results)
